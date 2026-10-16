@@ -12,15 +12,15 @@ The four techniques implemented were K-Shot Prompting, Chain-of-Thought Promptin
 
 ### Objective
 
-Classify incoming customer support messages into five possible categories: `billing`, `shipping`, `returns`, `technical`, or `other`. The model must return exactly one lowercase category label without additional explanations.
+Classify incoming customer support messages into four categories: `billing`, `shipping`, `returns`, or `technical`. The model must return exactly one lowercase category label without additional explanations.
 
 ### Final System Prompt
 
 ```text
 You are a customer support ticket classifier for an online store.
 
-Classify each customer message into exactly one of these categories:
-billing, shipping, returns, technical, other.
+Classify each customer message into exactly one of these four categories:
+billing, shipping, returns, technical.
 
 Examples:
 Message: I was charged the wrong amount.
@@ -35,21 +35,21 @@ Label: returns
 Message: The website shows an error when I log in.
 Label: technical
 
-Message: What are your store opening hours?
-Label: other
-
 Respond with only the category label in lowercase.
 Do not include explanations, punctuation, or additional text.
+Do not output any label outside the four allowed categories.
 ```
 
 ### Sample Input and Output
 
 **Input:**
+
 ```text
 My card was charged twice for order 4412.
 ```
 
 **Output:**
+
 ```text
 billing
 ```
@@ -58,7 +58,7 @@ billing
 
 ### What I Learned
 
-Providing labeled examples helped establish both the classification categories and the required output format. K-shot prompting allowed the model to perform a structured classification task without additional training or changes to the model itself.
+Providing labeled examples helped establish both the classification categories and the required output format. K-shot prompting allowed the model to perform a structured classification task without additional training or changes to the model itself. Restricting the output to the four categories specified in the assignment also demonstrated the importance of aligning prompt instructions with task requirements.
 
 ## 3. Chain-of-Thought Prompting — Refund Eligibility
 
@@ -97,17 +97,20 @@ The store's refund policy was provided separately in the program and appended to
 ### Sample Input and Output
 
 **Input:**
+
 ```text
 Bought 10 days ago, unused, not final sale.
 ```
 
-**Observed decision extracted by the test:**
-```text
-YES
-```
+**Observed model response:**
 
-**Required final response format:**
 ```text
+1. The purchase was made within the last 30 days, so this requirement is satisfied.
+2. The item is unused, so this requirement is satisfied.
+3. The item was not marked as final sale, so this requirement is satisfied.
+
+All three requirements are satisfied.
+
 DECISION: YES
 ```
 
@@ -115,7 +118,9 @@ DECISION: YES
 
 ### What I Learned
 
-Breaking a policy decision into explicit evaluation steps made the task more systematic. Requiring a fixed final decision format also made the response easier for the program to validate. The test confirmed the extracted decisions, although it did not display the model's complete explanatory responses.
+Breaking a policy decision into explicit evaluation steps made the task more systematic. Requiring a fixed final decision format also made the response easier for the program to validate.
+
+Additional inspection of the model's complete responses showed that correct final decisions do not always guarantee fully consistent explanations. In the rejection scenarios, the model occasionally confused missing information with an unsatisfied requirement or made assumptions about an item's condition. This demonstrated the importance of evaluating both the final answer and its supporting explanation.
 
 ## 4. Tool Calling — Order Status Lookup
 
@@ -146,16 +151,19 @@ The tool schema described `get_order_status` as a function for retrieving a cust
 ### Sample Input and Output
 
 **Input:**
+
 ```text
 Hi, can you check on order 4412 for me?
 ```
 
 **Model-generated tool call:**
+
 ```text
 get_order_status(order_id="4412")
 ```
 
 **Tool execution result:**
+
 ```text
 shipped, arriving Friday
 ```
@@ -197,16 +205,20 @@ A lightweight keyword-based retriever was implemented in `YOUR_RETRIEVER`. The f
 
 It then selects help-center lines whose category matches the detected topic. Only those retrieved lines are included in the context supplied to the language model.
 
+The billing keyword list was extended to include Visa, Mastercard, PayPal, and card-related terms. This improvement ensures that payment-method questions retrieve the relevant help-center information, even when the customer does not explicitly mention billing or payment.
+
 This approach demonstrates the retrieval and answer-generation stages of RAG without requiring embeddings or a vector database.
 
 ### Sample Input and Output
 
 **Input:**
+
 ```text
 How long do I have to return an item?
 ```
 
 **Output:**
+
 ```text
 you have 30 days from delivery to return an item.
 ```
@@ -214,11 +226,13 @@ you have 30 days from delivery to return an item.
 An additional test asked:
 
 **Input:**
+
 ```text
 What's your CEO's home address?
 ```
 
 **Output:**
+
 ```text
 i don't know based on the available help-center information.
 ```
@@ -242,4 +256,8 @@ All four techniques passed their provided automated checks using the locally hos
 
 ## 7. Overall Reflection — What I Learned
 
-Across these four techniques, I learned that large language models are effective at structured tasks when the expected behavior is clearly specified. K-shot prompting uses examples to communicate patterns and output formats, while chain-of-thought prompting provides an explicit sequence for evaluating multiple conditions. However, prompts alone are not always sufficient for reliable real-world applications. Tool calling provides a way to obtain information from external systems, and RAG supplies relevant documentary evidence while limiting unsupported answers. Together, these techniques demonstrate that effective LLM applications depend not only on the model's capabilities but also on carefully designed instructions, structured interfaces, retrieval mechanisms, and validation. Passing the provided tests confirms the required behavior for the tested examples, but broader reliability would require additional cases and evaluation.
+Across these four techniques, I learned that large language models are effective at structured tasks when the expected behavior is clearly specified. K-shot prompting uses examples to communicate patterns and output formats, while chain-of-thought prompting provides an explicit sequence for evaluating multiple conditions. However, prompts alone are not always sufficient for reliable real-world applications.
+
+Tool calling provides a way to obtain information from external systems, and RAG supplies relevant documentary evidence while limiting unsupported answers. Together, these techniques demonstrate that effective LLM applications depend not only on the model's capabilities but also on carefully designed instructions, structured interfaces, retrieval mechanisms, and validation.
+
+Passing the provided tests confirms the required behavior for the tested examples, but broader reliability would require additional cases and evaluation.

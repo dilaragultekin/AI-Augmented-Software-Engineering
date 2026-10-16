@@ -28,7 +28,7 @@ def YOUR_RETRIEVER(question: str, chunks: list[str]) -> list[str]:
     keywords = {
         "returns": ["return", "refund", "exchange"],
         "shipping": ["ship", "shipping", "delivery", "international"],
-        "billing": ["payment", "pay", "charged", "billing"],
+        "billing": ["payment", "pay", "charged", "billing", "visa", "mastercard", "paypal", "card"],
         "warranty": ["warranty", "guarantee", "defect"],
         "support": ["support", "chat", "contact", "hours"],
     }

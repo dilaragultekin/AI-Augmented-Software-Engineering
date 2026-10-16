@@ -16,8 +16,8 @@ NUM_RUNS = 5
 
 YOUR_SYSTEM_PROMPT = """You are a customer support ticket classifier for an online store.
 
-Classify each customer message into exactly one of these categories:
-billing, shipping, returns, technical, other.
+Classify each customer message into exactly one of these four categories:
+billing, shipping, returns, technical.
 
 Examples:
 Message: I was charged the wrong amount.
@@ -32,12 +32,12 @@ Label: returns
 Message: The website shows an error when I log in.
 Label: technical
 
-Message: What are your store opening hours?
-Label: other
-
 Respond with only the category label in lowercase.
 Do not include explanations, punctuation, or additional text.
+Do not output any label outside the four allowed categories.
 """
+
+
 
 
 CASES = [
