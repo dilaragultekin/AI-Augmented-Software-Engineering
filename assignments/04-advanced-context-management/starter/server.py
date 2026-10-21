@@ -17,13 +17,22 @@ BASE_URL = "https://api.restcountries.com/countries/v5"
 mcp = FastMCP("data-explorer")
 
 
-def fetch_countries(name: str) -> list[dict]:
-    """Fetch matching countries from REST Countries v5."""
+def fetch_countries(name: str, search: bool = False) -> list[dict]:
+    """Fetch countries from REST Countries v5.
+
+    search=True uses a name-search query.
+    search=False uses the common-name lookup endpoint.
+    """
 
     if not API_KEY:
         raise ValueError("RESTCOUNTRIES_API_KEY is not configured")
 
-    url = f"{BASE_URL}/names.common/{quote(name, safe='')}"
+    encoded_name = quote(name, safe="")
+
+    if search:
+        url = f"{BASE_URL}/names.common?q={encoded_name}"
+    else:
+        url = f"{BASE_URL}/names.common/{encoded_name}"
 
     response = httpx.get(
         url,
@@ -51,7 +60,7 @@ def fetch_countries(name: str) -> list[dict]:
     if not isinstance(countries, list):
         raise ValueError("Country list is missing")
 
-    if not all(isinstance(c, dict) for c in countries):
+    if not all(isinstance(country, dict) for country in countries):
         raise ValueError("Invalid country record")
 
     return countries
@@ -61,7 +70,10 @@ def fetch_countries(name: str) -> list[dict]:
 def search_countries(query: str, limit: int = 5) -> list[dict]:
     """Search countries by name.
 
-    Returns name, capital, region, and population.
+    Supports partial country-name queries.
+
+    Returns:
+        A list containing name, capital, region, and population.
     """
 
     if not isinstance(query, str) or not query.strip():
@@ -75,7 +87,7 @@ def search_countries(query: str, limit: int = 5) -> list[dict]:
         return [{"error": "limit must be an integer between 1 and 20"}]
 
     try:
-        countries = fetch_countries(query.strip())
+        countries = fetch_countries(query.strip(), search=True)
         results = []
 
         for country in countries[:limit]:
@@ -86,9 +98,11 @@ def search_countries(query: str, limit: int = 5) -> list[dict]:
                 raise ValueError("Invalid country fields")
 
             capital = None
+
             if capitals:
                 if not isinstance(capitals[0], dict):
                     raise ValueError("Invalid capital record")
+
                 capital = capitals[0].get("name")
 
             results.append(
@@ -104,15 +118,20 @@ def search_countries(query: str, limit: int = 5) -> list[dict]:
 
     except httpx.TimeoutException:
         return [{"error": "API request timed out"}]
+
     except httpx.HTTPError as exc:
         return [{"error": f"upstream request failed: {exc}"}]
+
     except (ValueError, TypeError, AttributeError) as exc:
         return [{"error": f"Unable to process country data: {exc}"}]
 
 
 @mcp.tool()
 def get_country_details(name: str) -> dict:
-    """Get currencies, languages, borders, and flag URL."""
+    """Get detailed country information.
+
+    Returns currencies, languages, borders, and flag URL.
+    """
 
     if not isinstance(name, str) or not name.strip():
         return {"error": "name must be a non-empty string"}
@@ -123,13 +142,16 @@ def get_country_details(name: str) -> dict:
         if not countries:
             return {"error": "Country not found"}
 
+        normalized_name = name.strip().casefold()
+
         # Prefer an exact common-name match.
         country = next(
             (
-                c for c in countries
-                if isinstance(c.get("names"), dict)
-                and c["names"].get("common", "").casefold()
-                == name.strip().casefold()
+                item
+                for item in countries
+                if isinstance(item.get("names"), dict)
+                and isinstance(item["names"].get("common"), str)
+                and item["names"]["common"].casefold() == normalized_name
             ),
             countries[0],
         )
@@ -144,7 +166,10 @@ def get_country_details(name: str) -> dict:
         languages = country.get("languages") or []
         borders = country.get("borders") or []
 
-        if not all(isinstance(x, list) for x in (currencies, languages, borders)):
+        if not all(
+            isinstance(value, list)
+            for value in (currencies, languages, borders)
+        ):
             raise ValueError("Invalid country details")
 
         return {
@@ -157,8 +182,10 @@ def get_country_details(name: str) -> dict:
 
     except httpx.TimeoutException:
         return {"error": "API request timed out"}
+
     except httpx.HTTPError as exc:
         return {"error": f"upstream request failed: {exc}"}
+
     except (ValueError, TypeError, AttributeError) as exc:
         return {"error": f"Unable to process country data: {exc}"}
 
