@@ -1,8 +1,8 @@
-\# Week 5 — Data Explorer MCP Server Writeup
+# Week 5 — Data Explorer MCP Server Writeup
 
 
 
-\## 1. Implementation Summary
+## 1. Implementation Summary
 
 
 
@@ -14,9 +14,9 @@ The server provides two MCP tools:
 
 
 
-\- `search\_countries(query, limit=5)`: Searches countries by their common or official names and returns their names, capitals, regions, and subregions.
+- `search_countries(query, limit=5)`: Searches countries by their common or official names and returns their names, capitals, regions, and subregions.
 
-\- `get\_country\_details(name)`: Retrieves a country's currencies, languages, bordering country codes, and flag URL.
+- `get_country_details(name)`: Retrieves a country's currencies, languages, bordering country codes, and flag URL.
 
 
 
@@ -24,7 +24,7 @@ Both tools use the same dataset loader, which caches the downloaded data to avoi
 
 
 
-\## 2. MCP Client Agent Transcript
+## 2. MCP Client Agent Transcript
 
 
 
@@ -32,19 +32,19 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 
 
-\### Tool Call 1 — search\_countries
+### Tool Call 1 — search_countries
 
 
 
-\*\*User prompt:\*\*
+**User prompt:**
 
 
 
-> Use the data-explorer MCP server's search\_countries tool to search for "Germany" with limit 5. Show the tool's actual response. Do not modify any files.
+> Use the data-explorer MCP server's search_countries tool to search for "Germany" with limit 5. Show the tool's actual response. Do not modify any files.
 
 
 
-\*\*Agent response:\*\*
+**Agent response:**
 
 
 
@@ -52,7 +52,7 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 
 
-\*\*Tool invocation:\*\*
+**Tool invocation:**
 
 
 
@@ -60,9 +60,9 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 {
 
-&#x20; "query": "Germany",
+  "query": "Germany",
 
-&#x20; "limit": 5
+  "limit": 5
 
 }
 
@@ -70,7 +70,7 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 
 
-\*\*Actual MCP tool response:\*\*
+**Actual MCP tool response:**
 
 
 
@@ -78,21 +78,21 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 {
 
-&#x20; "result": \[
+  "result": [
 
-&#x20;   {
+    {
 
-&#x20;     "name": "Germany",
+      "name": "Germany",
 
-&#x20;     "capital": "Berlin",
+      "capital": "Berlin",
 
-&#x20;     "region": "Europe",
+      "region": "Europe",
 
-&#x20;     "subregion": "Western Europe"
+      "subregion": "Western Europe"
 
-&#x20;   }
+    }
 
-&#x20; ]
+  ]
 
 }
 
@@ -100,19 +100,19 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 
 
-\### Tool Call 2 — get\_country\_details
+### Tool Call 2 — get_country_details
 
 
 
-\*\*User prompt:\*\*
+**User prompt:**
 
 
 
-> Use the data-explorer MCP server's get\_country\_details tool with name "Germany". Show the actual tool response. Do not modify any files.
+> Use the data-explorer MCP server's get_country_details tool with name "Germany". Show the actual tool response. Do not modify any files.
 
 
 
-\*\*Agent response:\*\*
+**Agent response:**
 
 
 
@@ -120,7 +120,7 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 
 
-\*\*Tool invocation:\*\*
+**Tool invocation:**
 
 
 
@@ -128,7 +128,7 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 {
 
-&#x20; "name": "Germany"
+  "name": "Germany"
 
 }
 
@@ -136,7 +136,7 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 
 
-\*\*Actual MCP tool response (before the flag URL correction):\*\*
+**Actual MCP tool response (before the flag URL correction):**
 
 
 
@@ -144,49 +144,49 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 {
 
-&#x20; "name": "Germany",
+  "name": "Germany",
 
-&#x20; "currencies": {
+  "currencies": {
 
-&#x20;   "EUR": {
+    "EUR": {
 
-&#x20;     "name": "Euro",
+      "name": "Euro",
 
-&#x20;     "symbol": "€"
+      "symbol": "€"
 
-&#x20;   }
+    }
 
-&#x20; },
+  },
 
-&#x20; "languages": {
+  "languages": {
 
-&#x20;   "deu": "German"
+    "deu": "German"
 
-&#x20; },
+  },
 
-&#x20; "borders": \[
+  "borders": [
 
-&#x20;   "AUT",
+    "AUT",
 
-&#x20;   "BEL",
+    "BEL",
 
-&#x20;   "CZE",
+    "CZE",
 
-&#x20;   "DNK",
+    "DNK",
 
-&#x20;   "FRA",
+    "FRA",
 
-&#x20;   "LUX",
+    "LUX",
 
-&#x20;   "NLD",
+    "NLD",
 
-&#x20;   "POL",
+    "POL",
 
-&#x20;   "CHE"
+    "CHE"
 
-&#x20; ],
+  ],
 
-&#x20; "flag\_url": "https://raw.githubusercontent.com/mledoze/countries/master/data/DEU.svg"
+  "flag_url": "https://raw.githubusercontent.com/mledoze/countries/master/data/DEU.svg"
 
 }
 
@@ -198,7 +198,7 @@ Both tools were successfully invoked through the MCP client. The original respon
 
 
 
-\## 3. Error Handling
+## 3. Error Handling
 
 
 
@@ -206,23 +206,23 @@ The implementation includes input validation and exception handling for common f
 
 
 
-\*\*Invalid or empty input:\*\* Both tools reject empty strings and invalid input types. The search tool also validates that `limit` is an integer between 1 and 20.
+**Invalid or empty input:** Both tools reject empty strings and invalid input types. The search tool also validates that `limit` is an integer between 1 and 20.
 
 
 
-\*\*No matching results:\*\* `search\_countries` returns an empty list, while `get\_country\_details` returns a structured `Country not found` error.
+**No matching results:** `search_countries` returns an empty list, while `get_country_details` returns a structured `Country not found` error.
 
 
 
-\*\*HTTP failures:\*\* The dataset loader uses `raise\_for\_status()` to detect unsuccessful HTTP responses. The tools catch `httpx.HTTPError` and return structured error messages.
+**HTTP failures:** The dataset loader uses `raise_for_status()` to detect unsuccessful HTTP responses. The tools catch `httpx.HTTPError` and return structured error messages.
 
 
 
-\*\*Timeouts:\*\* The HTTP request has a 30-second timeout. Both tools catch `httpx.TimeoutException`.
+**Timeouts:** The HTTP request has a 30-second timeout. Both tools catch `httpx.TimeoutException`.
 
 
 
-\*\*Invalid dataset structures:\*\* The loader checks the downloaded data, and the tools catch relevant data-processing exceptions.
+**Invalid dataset structures:** The loader checks the downloaded data, and the tools catch relevant data-processing exceptions.
 
 
 
@@ -230,7 +230,7 @@ During development, I tested normal country lookups and input validation. I also
 
 
 
-\## 4. Reflection
+## 4. Reflection
 
 
 
