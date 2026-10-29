@@ -124,7 +124,7 @@ Retrieves detailed information about a country by its common or official name.
     "AUT", "BEL", "CZE", "DNK", "FRA",
     "LUX", "NLD", "POL", "CHE"
   ],
-  "flag_url": "https://raw.githubusercontent.com/mledoze/countries/master/data/DEU.svg"
+  "flag_url": "https://raw.githubusercontent.com/mledoze/countries/master/data/deu.svg"
 }
 ```
 

@@ -144,7 +144,7 @@ def get_country_details(name: str) -> dict:
             "languages": country.get("languages") or {},
             "borders": country.get("borders") or [],
             "flag_url": (
-                FLAG_URL.format(cca3=cca3)
+                FLAG_URL.format(cca3=cca3.lower())
                 if cca3
                 else None
             ),

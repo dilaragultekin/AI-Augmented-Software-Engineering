@@ -136,7 +136,7 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 
 
-\*\*Actual MCP tool response:\*\*
+\*\*Actual MCP tool response (before the flag URL correction):\*\*
 
 
 
@@ -194,7 +194,7 @@ I registered the server in Visual Studio Code and tested both tools using GitHub
 
 
 
-Both tools were successfully invoked through the MCP client.
+Both tools were successfully invoked through the MCP client. The original response is preserved above as an accurate record of the agent test. The flag URL formatting was subsequently updated to use lowercase country codes following code review.
 
 
 
